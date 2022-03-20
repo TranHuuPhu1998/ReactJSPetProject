@@ -1,12 +1,16 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from 'app/hooks';
 import { actionDateCoverWallets } from 'app/redux/walletsRateSlice';
 import { IItemWallets } from 'data/types';
 import InitBalance from 'components/wallets/InitBalance';
-import Spinner from 'components/Loading/Spinner';
 import ListWallets from 'components/wallets/ListWallets';
 import InputWallets from 'components/wallets/InputWallets';
 import ButtonWallets from 'components/wallets/ButtonWallets';
+import TextStart from 'components/wallets/TextStart';
+import TitleWallets from 'components/wallets/TitleWallets';
+import FooterWallets from 'components/wallets/FooterWallets';
+import RateWallets from 'components/wallets/RateWallets';
+import AppLayout from 'layout/app';
 
 const Wallets: React.FC = () => {
   const [fromWalletsName, setFromWalletsName] = useState<string>('');
@@ -69,19 +73,19 @@ const Wallets: React.FC = () => {
     }
   };
 
-  const handleExchange = useCallback(() => {
+  const handleExchange = () => {
     setAmountFrom((prev) => prev - Number(priceFrom));
     if (isChangeAmountTo) {
       setAmountTo((prev) => prev + Number(priceTo));
     }
     setPriceFrom('');
     setPriceTo('');
-  }, [priceFrom, priceTo]);
+  };
 
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-gray-800">
+    <AppLayout>
       <div className="space-y-6 text-center">
-        <h1 className="text-2xl text-gray-200 font-semibold">Currency Exchange</h1>
+        <TitleWallets />
         <div className="bg-white p-6 rounded-lg space-y-6 w-full md:w-96">
         <ListWallets handleChangeFromWallets={handleChangeFromWallets} walletsName={fromWalletsName} route="from" />
           <div>
@@ -91,13 +95,11 @@ const Wallets: React.FC = () => {
                 <InputWallets calculationType="-" amount={amountFrom} priceRouting={priceFrom} onHandleChangeAmountTo={onHandleChangeAmountFrom} />
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">Select your currency to exchange</p>
+              <TextStart />
             )}
           </div>
         </div>
-        <div className="flex justify-center items-center text-white">
-          <span className="px-5 py-1 border rounded-xl border-white text-sm">{!rate ? <Spinner /> : `${fromWalletsUnit}1 = ${toWalletsUnit}${rate}`}</span>
-        </div>
+        <RateWallets rate={rate} fromWalletsUnit={fromWalletsUnit} toWalletsUnit={toWalletsUnit}/>
         <div className="bg-white p-6 rounded-lg space-y-6 w-full md:w-96">
         <ListWallets handleChangeFromWallets={handleChangeFromWallets} walletsName={toWalletsName} route="to" />
           {fromWalletsName && toWalletsName ? (
@@ -106,13 +108,13 @@ const Wallets: React.FC = () => {
               <InputWallets calculationType="+" amount={amountTo} priceRouting={priceTo} onHandleChangeAmountTo={onHandleChangeAmountTo} />
             </div>
           ) : (
-            <p className="text-gray-500 text-sm">Select your currency to exchange</p>
+            <TextStart />
           )}
         </div>
         <ButtonWallets handleExchange={handleExchange} priceTo={priceTo} priceFrom={priceFrom} />
       </div>
-      <p className="fixed bottom-0 pb-4 text-gray-500 text-sm">Created Tran Huu Phu - 18.March.2022</p>
-    </div>
+        <FooterWallets />
+    </AppLayout>
   );
 };
 
